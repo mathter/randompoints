@@ -1,6 +1,6 @@
 package biz.ostw.loly.randompoints
 
-import java.awt.Point
+import java.awt.{Dimension, Point, Rectangle}
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.util.prefs.Preferences
 import javax.swing._
@@ -22,15 +22,11 @@ object MainFrame extends JFrame("Hi") {
 
   private def createBoard(): JScrollPane = {
     val board = new Board
-    board.setSize(2000, 2000)
+    board.setPreferredSize(new Dimension(500,500))
 
-    val scrollPane = new JScrollPane()
-    scrollPane.getViewport.setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
-    scrollPane.getViewport.add(board)
+    val scrollPane = new JScrollPane(board)
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS)
     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS)
-
-    scrollPane.getViewport.setViewPosition(new Point(1000,1000))
 
     scrollPane
   }
