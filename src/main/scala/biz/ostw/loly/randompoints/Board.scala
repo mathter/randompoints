@@ -1,10 +1,11 @@
 package biz.ostw.loly.randompoints
 
-import java.awt.{Color, Dimension, Graphics, Rectangle}
-import javax.swing.{JComponent, JPanel, Scrollable}
+import java.awt.{Color, Dimension, Graphics}
+import javax.swing.JPanel
 
 class Board extends JPanel {
-  override def paintComponent(g: Graphics) = {
+
+  override def paintComponent(g: Graphics): Unit = {
     super.paintComponent(g)
 
     g.setColor(Color.BLUE)

@@ -21,13 +21,6 @@ object MainFrame extends JFrame("Hi") {
   }
 
   private def createBoard(): JScrollPane = {
-    val board = new Board
-    board.setPreferredSize(new Dimension(500,500))
-
-    val scrollPane = new JScrollPane(board)
-    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS)
-    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS)
-
-    scrollPane
+    new BoardView
   }
 }
