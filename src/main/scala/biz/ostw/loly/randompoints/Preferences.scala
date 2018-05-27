@@ -1,10 +1,13 @@
 package biz.ostw.loly.randompoints
 
 import java.awt.Rectangle
+import java.util.ResourceBundle
 import java.util.prefs.{Preferences => JPreferences}
 
 object Preferences {
   val pref: JPreferences = JPreferences.userNodeForPackage(Preferences.getClass);
+
+  val resources = ResourceBundle.getBundle("biz.ostw.loly.randompoints.messages")
 
   def position(): Rectangle = {
     new Rectangle(

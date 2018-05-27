@@ -1,11 +1,13 @@
 package biz.ostw.loly.randompoints
 
-import java.awt.{Dimension, Point, Rectangle}
+import java.awt.BorderLayout
 import java.awt.event.{WindowAdapter, WindowEvent}
-import java.util.prefs.Preferences
 import javax.swing._
 
 object MainFrame extends JFrame("Hi") {
+
+  private var startPointsCountSpinner: JSpinner = null
+
   {
     MainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 
@@ -15,12 +17,40 @@ object MainFrame extends JFrame("Hi") {
       }
     })
 
-    MainFrame.getContentPane.add(this.createBoard())
+    MainFrame.getContentPane.add(this.createContent())
     MainFrame.pack()
     MainFrame.setBounds(Preferences.position())
   }
 
+  private def createContent(): JPanel = {
+    val panel = new JPanel(new BorderLayout)
+
+    panel.add(this.createMainToolbar(), BorderLayout.NORTH)
+    panel.add(this.createBoard(), BorderLayout.CENTER)
+
+    panel
+  }
+
   private def createBoard(): JScrollPane = {
-    new BoardView
+    new BoardView()
+  }
+
+  private def createMainToolbar(): JToolBar = {
+    val toolBar = new JToolBar(SwingConstants.HORIZONTAL)
+
+    toolBar.add(this.createSpinner)
+    toolBar.addSeparator()
+    toolBar.add(new ResetAction)
+
+    toolBar
+  }
+
+  private def createSpinner(): JSpinner = {
+    if (this.startPointsCountSpinner == null) {
+      val model: SpinnerNumberModel = new SpinnerNumberModel(3, 2, 50, 1)
+      MainFrame.startPointsCountSpinner = new JSpinner(model)
+    }
+
+    this.startPointsCountSpinner
   }
 }
