@@ -1,47 +1,25 @@
 package biz.ostw.loly.randompoints
 
+import java.awt._
 import java.awt.event.{MouseWheelEvent, MouseWheelListener}
-import java.awt.geom.Point2D
-import java.awt.{Color, Dimension, Graphics, Point}
-import javax.swing.{JComponent, JPanel, Scrollable}
+import java.awt.geom.{Ellipse2D, Point2D}
+import javax.swing.JComponent
 
 class Board extends JComponent {
 
-  var startPoints: Array[Int] = _
+  var scale: Double = 1
 
-  var values: Array[Point2D.Double] = _
-
-  {
-    this.reset(3, 1000)
-  }
-
-  def setStartPoint(index: Int, point: Point2D.Double): Unit = {
-    if (index < this.startPoints.length) {
-
-    }
-  }
-
-  def reset(startPointCount: Int, valuesCount: Int): Unit = {
-    this.startPoints = Array(startPointCount)
-    this.values = Array.ofDim[Point2D.Double](valuesCount)
-  }
-
-  def getStartPointsCount(): Int = {
-    this.startPoints.length
-  }
-
-  def getValuesCount(): Int = {
-    this.values.length
-  }
+  val model: Model = new Model
 
   {
-    this.addMouseWheelListener(new MouseWheelListener {
+    this.addMouseWheelListener(new MouseWheelListener() {
       override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
 
         var dimension = Board.this.getPreferredSize
 
         dimension = new Dimension(dimension.width + e.getWheelRotation, dimension.height + e.getWheelRotation)
 
+        Board.this.scale += e.getWheelRotation * 0.1
         Board.this.setPreferredSize(dimension)
         Board.this.revalidate()
       }
@@ -51,13 +29,24 @@ class Board extends JComponent {
   override def paintComponent(g: Graphics): Unit = {
     super.paintComponent(g)
 
-    g.setColor(Color.BLUE)
-    g.drawOval(0, 0, 100, 100)
+
+    val g2d: Graphics2D = g.asInstanceOf[Graphics2D]
 
     g.setColor(Color.RED)
-    g.drawOval(50, 50, 100, 100)
+    for (p <- this.model.startPoints) {
+      if (p != null) {
+        this.drawStartPoint(g2d, p)
+      }
+    }
+  }
 
-    g.setColor(Color.GREEN)
-    g.drawOval(100, 100, 100, 100)
+  def drawStartPoint(g: Graphics2D, p: Point2D.Double): Unit = {
+    val s = new Ellipse2D.Double(p.x, p.y, 6, 6)
+
+    g.fill(s)
+  }
+
+  def drawOrdinalPoint(g: Graphics2D, p: Point2D.Double): Unit = {
+
   }
 }
