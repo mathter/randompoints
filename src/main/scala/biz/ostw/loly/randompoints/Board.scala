@@ -31,23 +31,27 @@ class Board extends JComponent {
 
     val mouseAdapter = new MouseInputAdapter() {
 
-      var dragMode: Boolean = _
-
       override def mouseDragged(e: MouseEvent): Unit = {
-        Board.this.getGraphics.asInstanceOf[Graphics2D].draw(new Ellipse2D.Double(e.getPoint.x, e.getPoint.y, 10, 10))
-        Board.this.revalidate()
-
-        this.dragMode = true
+        Board.this.highLightIndex.map(i => {
+          Board.this.model.startPoints.update(i, new Point2D.Double(e.getPoint.x, e.getPoint.y))
+          Board.this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+          repaint()
+        }
+        )
       }
 
       override def mouseReleased(e: MouseEvent): Unit = {
-        Board.this.highLightIndex.map(
-          Board.this.model.startPoints.update(_, new Point2D.Double(e.getPoint.x, e.getPoint.y)))
-
-        this.dragMode = false
+        Board.this.highLightIndex.map(i => {
+          Board.this.model.startPoints.update(i, new Point2D.Double(e.getPoint.x, e.getPoint.y))
+          Board.this.highLightIndex = Option.empty[Int]
+          Board.this.setCursor(Cursor.getDefaultCursor);
+        }
+        )
       }
 
-      override def mouseMoved(e: MouseEvent): Unit = {
+      override def mouseMoved(e: MouseEvent): Unit
+
+      = {
         Board.this.highLightIndex = Board.this.model.startPoints.
           find(e.getPoint.distance(_) <= Preferences.pointSize()).
           fold(Option.empty[Int])(p =>
@@ -69,7 +73,7 @@ class Board extends JComponent {
 
     val g2d: Graphics2D = g.asInstanceOf[Graphics2D]
 
-    g.setColor(Color.CYAN)
+    g.setColor(Color.BLUE)
     for (p <- this.model.startPoints) {
       if (p != null) {
         this.drawStartPoint(g2d, p)
