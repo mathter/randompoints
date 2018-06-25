@@ -9,6 +9,10 @@ object Preferences {
 
   val resources = ResourceBundle.getBundle("biz.ostw.loly.randompoints.messages")
 
+  def pointSize(): Double = {
+    6
+  }
+
   def position(): Rectangle = {
     new Rectangle(
       this.pref.getInt("x", 0),
