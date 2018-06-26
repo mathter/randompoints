@@ -85,11 +85,9 @@ class Board(val model: Model = new Model) extends JComponent with ModelListener 
 
     this.highLightIndex.map(this.model.startPoints(_)).map(this.highLight(g2d, _))
 
-    this.model.values.map(a => {
-      for (p <- a) {
-        this.drawOrdinalPoint(g2d, p)
-      }
-    })
+    this.model.values.map(_.foreach(p => {
+      this.drawOrdinalPoint(g2d, p)
+    }))
   }
 
   private def highLight(g: Graphics2D, p: Point2D): Unit = {
@@ -116,18 +114,18 @@ class Board(val model: Model = new Model) extends JComponent with ModelListener 
   }
 
   override def fireReset(model: Model): Unit = {
-    this.invalidate()
+    this.repaint()
   }
 
   override def fireAddStartPoint(model: Model, point: Point2D): Unit = {
-    this.invalidate()
+    this.repaint()
   }
 
   override def fireUpdateStartPoint(model: Model, index: Int, point: Point2D): Unit = {
-    this.invalidate()
+    this.repaint()
   }
 
   override def fireRecalc(model: Model): Unit = {
-    this.invalidate()
+    this.repaint()
   }
 }

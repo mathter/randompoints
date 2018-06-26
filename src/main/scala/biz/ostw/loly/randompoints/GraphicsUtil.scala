@@ -32,10 +32,14 @@ object GraphicsUtil {
 
   def calcPoint2D(p0: Point2D, p1: Point2D, factor: Double): Try[Point2D] = {
     Try({
-      val xdiff = (p1.getX - p0.getX) * factor
-      val ydiff = (p1.getY - p0.getY) * factor
+      if (p0.equals(p1)) {
+        p0
+      } else {
+        val xdiff = (p1.getX - p0.getX) * factor
+        val ydiff = (p1.getY - p0.getY) * factor
 
-      new Point2D.Double(p0.getX + xdiff, p0.getY + ydiff)
+        new Point2D.Double(p0.getX + xdiff, p0.getY + ydiff)
+      }
     }
     )
   }

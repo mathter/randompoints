@@ -10,7 +10,7 @@ class Model {
 
   var startPoints: ArrayBuffer[Point2D] = new ArrayBuffer[Point2D]
 
-  var valuesCount: Int = 100
+  var valuesCount: Int = 5000
 
   var values: Option[Array[Point2D]] = Option.empty
 
@@ -73,9 +73,9 @@ class Model {
     this.values = Option(Array.ofDim(this.valuesCount))
 
     this.values.map(a =>
-      for (i <- 1 to a.length) {
+      for (i <- 0 to a.length) {
         val to: Point2D = this.startPoints(random.nextInt(this.startPoints.length))
-        GraphicsUtil.calcPoint2D(current, to, 1.6).map(p => {
+        GraphicsUtil.calcPoint2D(current, to, 0.61).map(p => {
           a.update(i, p)
           current = p
         })
