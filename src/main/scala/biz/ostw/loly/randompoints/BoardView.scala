@@ -4,11 +4,16 @@ import java.awt.{Component, Dimension, GraphicsEnvironment}
 import javax.swing.{JScrollPane, JViewport, ScrollPaneConstants, SwingUtilities}
 
 
-class BoardView extends JScrollPane {
+class BoardView(private val board: Board = new Board) extends JScrollPane {
   {
-    val board = new Board
+    val screenBounds = GraphicsEnvironment.getLocalGraphicsEnvironment.getDefaultScreenDevice.getDefaultConfiguration.getBounds
 
-    board.setPreferredSize(GraphicsEnvironment.getLocalGraphicsEnvironment.getDefaultScreenDevice.getDefaultConfiguration.getBounds.getSize)
-    this.setViewportView(board)
+    board.setPreferredSize(screenBounds.getSize)
+    this.setViewportView(this.board)
+    GraphicsUtil.getCenterPoint(screenBounds).map(this.getViewport.setViewPosition(_))
+  }
+
+  def model(): Model = {
+    this.board.model
   }
 }

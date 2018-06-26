@@ -1,22 +1,39 @@
 package biz.ostw.loly.randompoints
 
 import java.awt._
-import java.awt.event.{MouseEvent, MouseMotionListener, MouseWheelEvent, MouseWheelListener}
+import java.awt.event._
 import java.awt.geom.{Ellipse2D, Point2D}
 
 import javax.swing.JComponent
 import javax.swing.event.MouseInputAdapter
 
-class Board extends JComponent {
+class Board(val model: Model = new Model) extends JComponent with ModelListener {
 
   var scale: Double = 1
-
-  val model: Model = new Model
 
   var highLightIndex: Option[Int] = Option.empty[Int]
 
   {
-    this.addMouseWheelListener(new MouseWheelListener() {
+    this.model.modelListeners += this
+
+    val mouseAdapter = new MouseInputAdapter() {
+
+
+      override def mouseClicked(e: MouseEvent): Unit = {
+        if (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK) {
+          Board.this.model.addStartPoint(e.getPoint)
+        }
+      }
+
+      override def mouseDragged(e: MouseEvent): Unit = {
+        Board.this.highLightIndex.map(i => {
+          Board.this.model.startPoints.update(i, new Point2D.Double(e.getPoint.x, e.getPoint.y))
+          Board.this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+          repaint()
+        }
+        )
+      }
+
       override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
 
         var dimension = Board.this.getPreferredSize
@@ -26,18 +43,6 @@ class Board extends JComponent {
         Board.this.scale += e.getWheelRotation * 0.1
         Board.this.setPreferredSize(dimension)
         Board.this.revalidate()
-      }
-    })
-
-    val mouseAdapter = new MouseInputAdapter() {
-
-      override def mouseDragged(e: MouseEvent): Unit = {
-        Board.this.highLightIndex.map(i => {
-          Board.this.model.startPoints.update(i, new Point2D.Double(e.getPoint.x, e.getPoint.y))
-          Board.this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-          repaint()
-        }
-        )
       }
 
       override def mouseReleased(e: MouseEvent): Unit = {
@@ -49,9 +54,7 @@ class Board extends JComponent {
         )
       }
 
-      override def mouseMoved(e: MouseEvent): Unit
-
-      = {
+      override def mouseMoved(e: MouseEvent): Unit = {
         Board.this.highLightIndex = Board.this.model.startPoints.
           find(e.getPoint.distance(_) <= Preferences.pointSize()).
           fold(Option.empty[Int])(p =>
@@ -81,23 +84,50 @@ class Board extends JComponent {
     }
 
     this.highLightIndex.map(this.model.startPoints(_)).map(this.highLight(g2d, _))
+
+    this.model.values.map(a => {
+      for (p <- a) {
+        this.drawOrdinalPoint(g2d, p)
+      }
+    })
   }
 
-  def highLight(g: Graphics2D, p: Point2D.Double): Unit = {
+  private def highLight(g: Graphics2D, p: Point2D): Unit = {
     val half = Preferences.pointSize
-    val s = new Ellipse2D.Double(p.x - half, p.y - half, Preferences.pointSize * 2, Preferences.pointSize * 2)
+    val s = new Ellipse2D.Double(p.getX - half, p.getY - half, Preferences.pointSize * 2, Preferences.pointSize * 2)
 
     g.setColor(Color.RED)
     g.draw(s)
   }
 
-  def drawStartPoint(g: Graphics2D, p: Point2D.Double): Unit = {
+  private def drawStartPoint(g: Graphics2D, p: Point2D): Unit = {
     val half = Preferences.pointSize / 2
-    val s = new Ellipse2D.Double(p.x - half, p.y - half, Preferences.pointSize, Preferences.pointSize)
+    val s = new Ellipse2D.Double(p.getX - half, p.getY - half, Preferences.pointSize, Preferences.pointSize)
 
     g.fill(s)
   }
 
-  def drawOrdinalPoint(g: Graphics2D, p: Point2D.Double): Unit = {
+  private def drawOrdinalPoint(g: Graphics2D, p: Point2D): Unit = {
+    val half = Preferences.pointSize / 2
+    val s = new Ellipse2D.Double(p.getX - half, p.getY - half, Preferences.pointSize, Preferences.pointSize)
+
+    g.setColor(Color.BLACK)
+    g.draw(s)
+  }
+
+  override def fireReset(model: Model): Unit = {
+    this.invalidate()
+  }
+
+  override def fireAddStartPoint(model: Model, point: Point2D): Unit = {
+    this.invalidate()
+  }
+
+  override def fireUpdateStartPoint(model: Model, index: Int, point: Point2D): Unit = {
+    this.invalidate()
+  }
+
+  override def fireRecalc(model: Model): Unit = {
+    this.invalidate()
   }
 }

@@ -6,7 +6,7 @@ import javax.swing._
 
 object MainFrame extends JFrame("Hi") {
 
-  private var startPointsCountSpinner: JSpinner = null
+  val boardView: BoardView = new BoardView
 
   {
     MainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
@@ -26,31 +26,18 @@ object MainFrame extends JFrame("Hi") {
     val panel = new JPanel(new BorderLayout)
 
     panel.add(this.createMainToolbar(), BorderLayout.NORTH)
-    panel.add(this.createBoard(), BorderLayout.CENTER)
+    panel.add(this.boardView, BorderLayout.CENTER)
 
     panel
-  }
-
-  private def createBoard(): JScrollPane = {
-    new BoardView()
   }
 
   private def createMainToolbar(): JToolBar = {
     val toolBar = new JToolBar(SwingConstants.HORIZONTAL)
 
-    toolBar.add(this.createSpinner)
+    toolBar.add(new ResetAction(this.boardView.model))
     toolBar.addSeparator()
-    toolBar.add(new ResetAction)
+    toolBar.add(new RecalcAction(this.boardView.model))
 
     toolBar
-  }
-
-  private def createSpinner(): JSpinner = {
-    if (this.startPointsCountSpinner == null) {
-      val model: SpinnerNumberModel = new SpinnerNumberModel(3, 2, 50, 1)
-      MainFrame.startPointsCountSpinner = new JSpinner(model)
-    }
-
-    this.startPointsCountSpinner
   }
 }
